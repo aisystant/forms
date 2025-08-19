@@ -1,0 +1,28 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    uses: aisystant/ci/.github/workflows/docker-publish.yml@main
+    with:
+      dockerfile_path: '.'
+      platforms: 'linux/amd64'
+      push_to_registry: ${{ github.event_name != 'pull_request' }}
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: aisystant/ci/.github/workflows/nomad.yml@main
+    with:
+      image_tag: 'sha-${{ github.sha }}'
+      environment: 'production'
+      nomad_job_file: 'nomad-job.hcl'
+    secrets:
+      NOMAD_SSH_PRIVATE_KEY: ${{ secrets.NOMAD_SSH_PRIVATE_KEY }}
+      NOMAD_HOST: ${{ secrets.NOMAD_HOST }}
+      NOMAD_USER: ${{ secrets.NOMAD_USER }}
