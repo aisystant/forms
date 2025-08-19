@@ -24,5 +24,6 @@ jobs:
       nomad_job_file: 'nomad-job.hcl'
     secrets:
       NOMAD_SSH_PRIVATE_KEY: ${{ secrets.NOMAD_SSH_PRIVATE_KEY }}
+    vars:
       NOMAD_HOST: ${{ secrets.NOMAD_HOST }}
       NOMAD_USER: ${{ secrets.NOMAD_USER }}
