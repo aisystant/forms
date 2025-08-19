@@ -18,7 +18,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     uses: aisystant/ci/.github/workflows/nomad.yml@main
     with:
-      image_tag: 'sha-${{ github.sha }}'
+      image_tag: ${{ needs.build.outputs.digest }}
       environment: 'production'
       nomad_job_file: 'nomad-job.hcl'
     secrets:
