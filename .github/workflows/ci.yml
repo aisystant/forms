@@ -3,7 +3,9 @@ name: Build and Deploy
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -15,10 +17,10 @@ jobs:
 
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     uses: aisystant/ci/.github/workflows/nomad.yml@main
     with:
-      image_tag: ${{ needs.build.outputs.digest }}
+      image_tag: ${{ needs.build.outputs.sha_tag }}
       environment: 'production'
       nomad_job_file: 'nomad-job.hcl'
     secrets:
