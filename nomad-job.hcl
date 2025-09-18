@@ -12,6 +12,16 @@ job "forms" {
         ports = ["http"]
       }
       
+      template {
+        data = <<EOH
+TELEGRAM_BOT_TOKEN={{ with nomadVar "nomad/jobs/forms/web/app" }}{{ .TELEGRAM_BOT_TOKEN | toJSON }}{{ end }}
+EOH
+        destination = "${NOMAD_SECRETS_DIR}/app.env"
+        env         = true
+        change_mode = "restart"
+        error_on_missing_key = true
+      }
+
       resources {
         cpu    = 100
         memory = 128
